@@ -17,6 +17,6 @@ keys.json
 
 # docker
 docker-compose.yml
-
+cookies.txt
 # ide
 .vscode
