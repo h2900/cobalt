@@ -12,6 +12,7 @@ RUN apk add --no-cache python3 alpine-sdk git
 RUN pnpm install --prod --frozen-lockfile
 RUN pnpm deploy --filter=@imput/cobalt-api --prod /prod/api
 
+# تهيئة مستودع Git الوهمي كما هو
 RUN cd /prod/api && \
     git init && \
     git config user.email "railway@deploy.com" && \
@@ -26,6 +27,12 @@ WORKDIR /app
 RUN apk add --no-cache git
 
 COPY --from=build --chown=node:node /prod/api /app
+
+# نسخ ملف الكوكيز من مجلد المشروع إلى داخل الحاوية النهائية
+COPY cookies.txt /app/cookies.txt
+
+# إخبـار النظام بمسار ملف الكوكيز (بعض إصدارات Cobalt تستخدم متغيرات خاصة، لكن yt-dlp يعتمد غالباً على مسار افتراضي أو إعدادات السيرفر)
+ENV YT_DLP_COOKIES="/app/cookies.txt"
 
 USER node
 
