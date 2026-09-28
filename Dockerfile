@@ -28,11 +28,13 @@ RUN apk add --no-cache git
 
 COPY --from=build --chown=node:node /prod/api /app
 
-# نسخ ملف الكوكيز من مجلد المشروع إلى داخل الحاوية النهائية
-COPY cookies.txt /app/cookies.txt
+# إنشاء ملف cookies.txt تلقائياً داخل الحاوية من متغير البيئة في Railway لضمان الأمان وعدم رفعه لـ GitHub
+RUN mkdir -p /app/cookies && \
+    echo "$YT_DLP_COOKIES" > /app/cookies/cookies.txt
 
-# إخبـار النظام بمسار ملف الكوكيز (بعض إصدارات Cobalt تستخدم متغيرات خاصة، لكن yt-dlp يعتمد غالباً على مسار افتراضي أو إعدادات السيرفر)
-ENV YT_DLP_COOKIES="/app/cookies.txt"
+# إخبار النظام وأداة التحميل بمسار ملف الكوكيز صراحة
+ENV YT_DLP_COOKIES="/app/cookies/cookies.txt"
+ENV YTDL_OPTIONS_COOKIES="/app/cookies/cookies.txt"
 
 USER node
 
